@@ -1,5 +1,6 @@
 const Account = require("../src/account.js");
 const Transaction = require("../src/transaction.js");
+const Statement = require("../src/statement.js");
 
 describe("Account", () => {
     let account;
@@ -39,7 +40,7 @@ describe("Account", () => {
 
     it("stores transactions", () => {
         const date = account.date
-        expected = [new Transaction(date, 1000), new Transaction(date, 2000), new Transaction(date, -500)]
+        expected = [new Transaction(date, -500, 3000), new Transaction(date, 2000, 1000), new Transaction(date, 1000)]
         account.deposit(1000);
         account.deposit(2000);
         account.withdraw(500);
@@ -47,4 +48,30 @@ describe("Account", () => {
         expect(expected).toEqual(result)
     });
 
+    it("can get a statement", () => {
+        expected = 
+        'date       || credit  || debit  || balance'
+        + '\n14/01/2012 ||         || 500.00 || 2500.00'
+        + '\n13/01/2012 || 2000.00 ||        || 3000.00'
+        + '\n10/01/2012 || 1000.00 ||        || 1000.00'
+        account.setDate(2012,01,10)
+        account.deposit(1000)
+        account.setDate(2012,01,13)
+        account.deposit(2000)
+        account.setDate(2012,01,14)
+        account.withdraw(500)
+        expect(expected).toEqual(account.getStatement())
+    });
+});
+
+describe("Statement", () => {
+let statement
+    beforeEach(() => {
+        statement = new Statement()
+    });
+    it("can print a blank statement", () => {
+        const expected = "date       || credit  || debit  || balance"
+        const result = statement.print([]);
+        expect(expected).toEqual(result);
+    });
 });

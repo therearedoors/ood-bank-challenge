@@ -1,4 +1,5 @@
 const Transaction = require("./transaction.js");
+const Statement = require("../src/statement.js");
 
 class Account {
     constructor(balance = 0) {
@@ -16,7 +17,7 @@ class Account {
         if (amount < 0){
       throw new Error(`can't deposit negative amount "${amount}"`)
     }
-    this.transactions.push(new Transaction(this.date, amount))
+    this.transactions.unshift(new Transaction(this.date, amount, this.balance))
     this.balance += amount
     }
     withdraw(amount) {
@@ -26,8 +27,13 @@ class Account {
         if (this.balance - amount < this.overdraft){
             throw new Error("overdraft limit reached")
         }
-        this.transactions.push(new Transaction(this.date, 0-amount))
+        this.transactions.unshift(new Transaction(this.date, 0-amount, this.balance))
         this.balance -= amount
+    }
+
+    getStatement(){
+        const statement = new Statement();
+        return statement.print(this.transactions)
     }
 }
 module.exports = Account
