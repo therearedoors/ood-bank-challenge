@@ -2,21 +2,24 @@ class Statement {
     constructor(){
     this.header = "date       || credit  || debit  || balance"
     this.div = ' || '
-    this.rowSizes = []
+    this.columnSizes = {
+        "credit": 0,
+        "debit": 0,
+        "balance": 0
+        }
+    this.whiteSpaceVal = 7
     }
 
-    determineRowSizes(transactions){
-        const rowSizes = [0,0,0]
+    determineColumnSizes(transactions){
         for (const transaction of transactions){
-        rowSizes[0] = Math.max(String(transaction.credit).length,rowSizes[0])
-        rowSizes[1] = Math.max(String(transaction.debit).length,rowSizes[1])
-        rowSizes[2] = Math.max(String(transaction.balance).length,rowSizes[2])
-        this.rowSizes = rowSizes
+            for (const key in this.columnSizes){
+        this.columnSizes[`${key}`] = Math.max(String(transaction[`${key}`]).length,this.columnSizes[`${key}`])
+            }
         }
     }
 
     print(transactions) {
-        this.determineRowSizes(transactions)
+        this.determineColumnSizes(transactions)
         let str = this.header
         str += transactions.reduce((str,transaction) => str + this.getLine(transaction), "");
         return str
@@ -24,16 +27,16 @@ class Statement {
 
     getLine(transaction) {
         let str = `\n${transaction.date}`
-        str += `${this.stringifyNumber(transaction.credit, this.rowSizes[0])}`
-        str += `${this.stringifyNumber(transaction.debit, this.rowSizes[1])}`
-        str += `${this.stringifyNumber(transaction.balance, this.rowSizes[2])}`
+        for (const key in this.columnSizes){
+        str += `${this.padColumnContent(transaction[`${key}`], this.columnSizes[`${key}`])}`
+        }
         return str;
     }
 
-    stringifyNumber(number, rowSize){
+    padColumnContent(number, columnSize){
         const string = `${this.div}${Number(number).toFixed(2)}`
         if (number > 0) return string;
-        return `${this.div}`.padEnd(rowSize+7, ' ')
+        return `${this.div}`.padEnd(columnSize+this.whiteSpaceVal, ' ')
     }
 
 }
