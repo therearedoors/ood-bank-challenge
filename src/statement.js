@@ -12,8 +12,8 @@ class Statement {
 
     determineColumnSizes(transactions){
         for (const transaction of transactions){
-            for (const key in this.columnSizes){
-        this.columnSizes[`${key}`] = Math.max(String(transaction[`${key}`]).length,this.columnSizes[`${key}`])
+            for (const column in this.columnSizes){
+        this.columnSizes[`${column}`] = Math.max(String(transaction[`${column}`]).length,this.columnSizes[`${column}`])
             }
         }
     }
@@ -27,8 +27,8 @@ class Statement {
 
     getLine(transaction) {
         let str = `\n${transaction.date}`
-        for (const key in this.columnSizes){
-        str += `${this.padColumnContent(transaction[`${key}`], this.columnSizes[`${key}`])}`
+        for (const column in this.columnSizes){
+        str += `${this.padColumnContent(transaction[`${column}`], this.columnSizes[`${column}`])}`
         }
         return str;
     }
